@@ -17,6 +17,7 @@ class Drug:
     def __repr__(self):
         return "Name : {}\nStructure : {}".format(self.name, self.structure)
     
+    # Method to check if drug has structural data
     def has_structure(self):
         if self.structure is not None:
             return True
@@ -32,7 +33,7 @@ def read_from_bucket(number_of_drugs = 50000, bucket = 'insight-ashwin-s3-bucket
     obj = s3.Object(bucket, key)
     file = obj.get()['Body'].read()
     tree = et.ElementTree(et.fromstring(file))
-    return read_data(tree)
+    return read_data(tree, number_of_drugs)
 
 
 def read_from_file(xml_file, number_of_drugs = 50000):
@@ -80,10 +81,3 @@ def read_data(tree, number_of_drugs = 50000, addon = '{http://www.drugbank.ca}')
     
     print('Drugs read : ', drug_count)
     return drug_list
-
-def main():
-    drug_list = read_from_bucket(number_of_drugs = 10)
-    print(drug_list[0][0])
-
-if __name__ == '__main__':
-    main()
