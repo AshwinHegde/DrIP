@@ -4,20 +4,31 @@ import lxml.etree as et
 import xml.etree.ElementTree as ET
 
 
-# TODO : Paths are included as arguments to read functions. Maybe include this in an external file that user can modify
+# TODO : Paths are included as arguments to read functions.
+# Maybe include this in an external file that user can modify
+# TODO : Improve documentation.
 
 
-'''
-Contains functions to read data from XML file obtained from DrugBank. Separate functions to read locally and to read from S3 storage.
+# Contains functions to read data from XML file obtained from DrugBank.
+# Separate functions to read locally and to read from S3 storage.
+#
+# Defines a Drug class that for my purposes has name, structure
+# and interactions as attributes. The XML file from DrugBank has
+# much more information than read here and if necessary these can
+# be added to the class definition. Note that then, extra commands
+# must be written into read_data to read these attributes.
+# 
+# Read functions return a list of Drug objects and a dictionary
+# of drug names with corresponding SMILES representations.
 
-Defines a Drug class that for my purposes has name, structure and interactions as attributes. The XML file from DrugBank has much more information than read here and if necessary these can be added to the class definition. Note that then, extra commands must be written into read_data to read these attributes.
+# Also defines an Interaction class that contains the names of
+# two drugs, their SMILES representation and a textual description
+# of their interaction.
 
-Read functions return a list of Drug objects and a dictionary of drug names with corresponding SMILES representations.
+# A function (get_interaction) returns a list of all interactions
+# (Interaction objects) present in a list of drugs (Drug objects).
+# Drugs without structural information are filtered out.
 
-Also defines an Interaction class that contains the names of two drugs, their SMILES representation and a textual description of their interaction.
-
-A function (get_interaction) returns a list of all interactions (Interaction objects) present in a list of drugs (Drug objects). Drugs without structural information are filtered out.
-'''
 
 
 class Drug:
@@ -41,7 +52,9 @@ class Drug:
 
 
 class Interaction:
-    ''''''
+    '''
+    Contains names and SMILES representations of a pair of drugs along with a textual description of the kind of interaction.
+    '''
     def __init__(self, druga = None, smilesa = None, drugb = None, smilesb = None, description = None):
         self.druga = druga
         self.smilesa = smilesa
@@ -101,7 +114,6 @@ def read_data(tree, number_of_drugs = 50000, addon = '{http://www.drugbank.ca}')
                         drug.structure = calc_property[1].text
                         
             if elem[i].tag ==  addon+'drug-interactions':
-                #all_drug_interactions = {}
                 interactions = elem[i]
                 drug.interactions = {inter[1].text.lower():inter[2].text for inter in interactions}
 
@@ -130,8 +142,3 @@ def generate_interactions(drug_list, smiles_dict):
                 interaction_count += 1
 
     return interaction_list
-
-if __name__ == '__main__':
-    drug_list, smiles_dict = read_from_bucket()
-    interaction_list = generate_interactions(drug_list, smiles_dict)
-    print('Number of interactions : ', len(interaction_list))
