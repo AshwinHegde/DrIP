@@ -1,10 +1,10 @@
 import rdkit as rd
 from rdkit import Chem
-from rdkit.Chem import AllChem
-import numpy as np
+#from rdkit.Chem import AllChem
+#import numpy as np
 from collections import Counter
-
-# TODO : Optional arguments?
+from gensim.models import word2vec
+from mol2vec_utils import *
 
 
 # File to generate numerical features from smiles data and replace
@@ -33,8 +33,37 @@ def smiles_to_ECFP(smiles, fp_radius = 2):
         rd.DataStructs.ConvertToNumpyArray(fp, fparr)
     else:
         return None
+
+    fparr = fparr.astype('B') # Convert to byte to save memory
     
     return fparr
+
+
+def smiles_to_mol2vec_vector(smiles, model_path = 'model_300dim.pkl', fp_radius = 2, uncommon = None):
+    '''Convert a SMILES string to a Mol2Vec vector
+
+
+    '''
+
+    word2vec_model = word2vec.Word2Vec.load(model_path)
+
+    if uncommon:
+        try:
+            word2vec_model[uncommon]
+        except KeyError:
+            raise KeyError('Selected word for uncommon: %s not in vocabulary' % uncommon)
+    
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is not None:
+        sentence = mol2alt_sentence(mol, fp_radius)
+        vec = sentence2vec(sentence, word2vec_model, unseen = uncommon)
+        if vec.shape == (300,):
+            return vec
+        else:
+            return None
+    else:
+        return None
+
 
 def featurize_smiles_and_interactions(relation_list, smiles_feature_generator,\
      smiles_dict, label_map):
@@ -68,8 +97,7 @@ def featurize_smiles_and_interactions(relation_list, smiles_feature_generator,\
     drug_pair_list = []
 
     for relation in relation_list:
-        sub, obj, interaction = relation.subject, relation.object, relation.normalized_relation
-
+        sub, obj, interaction = relation.get()
         sub_smiles, obj_smiles = smiles_dict[sub], smiles_dict[obj]
 
         if sub_smiles not in feature_dict:
@@ -107,6 +135,7 @@ def filter_less_frequent_labels(smiles_feature_list, interaction_label_list,\
         interaction_label_list (list): Filtered list of interaction labels.
         drug_pair_list (list): Filtered list of pairs of drug names.
     '''
+    
     assert(len(smiles_feature_list) == len(interaction_label_list))
     assert(len(drug_pair_list) == len(interaction_label_list))
     
