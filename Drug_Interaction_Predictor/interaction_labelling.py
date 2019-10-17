@@ -1,16 +1,23 @@
 from labels import *
 
-# TODO : 
+# TODO : Document code
 
-'''
-
-'''
+# File to extract particular keywords from textual description of interactions.
+#
 
 
 class Relation:
+    '''Contains information about the cause and effect relationship between two drugs.
+
+    Attributes :
+        subject (str): Name of subject drug.
+        object (str): Name of object drug.
+        description (str): Textual description of interaction between subject and object.
+        relation (str): Text that contains only the interaction text extracted from 
+            description.
+        normalized_relation (str): Keyword related to relation.
     '''
-    Contains information about the cause and effect relationship between two drugs.
-    '''
+
     def __init__(self, interaction = None):
         if interaction is None:
             self.subject = None
@@ -22,11 +29,14 @@ class Relation:
             self.get_relation_from_interaction(interaction)
             self.get_normalized_relation(NORMALIZED_KEYWORDS)
     
-    def __repr__(self):
-        return 'Subject : {}\nObject : {}\nDescription : {}\nRelation : {}\nNormalized relation :{}'\
-    .format(self.subject, self.object, self.description, self.relation, self.normalized_relation)
-    
     def get_relation_from_interaction(self, interaction):
+        '''Get relation information from Interaction instance.
+
+        Args:
+            interaction (class Interaction): Interaction instance to read drug pair and
+                interaction description from.
+        '''
+
         druga = interaction.druga
         drugb = interaction.drugb
         self.description = interaction.description.lower()
@@ -35,6 +45,7 @@ class Relation:
         index2 = self.description.find(drugb)
 
         prefix = ''
+        # Find which drug appears first in the interaction description.
         if min(index1, index2) != 0:
             prefix = self.description[:min(index1, index2)]
 
@@ -51,6 +62,10 @@ class Relation:
             self.subject, self.object = self.object, self.subject
 
     def is_in_order(self, keywords):
+        '''Check if keywords appear in the correct order in relation.
+        
+        '''
+
         if len(keywords) == 0:
             return True
 
@@ -77,9 +92,14 @@ class Relation:
         else:
             return False
 
+    def get(self):
+        '''Return the subject, object and normalized_relation of the instance.'''
+
+        return self.subject, self.object, self.normalized_relation
+
 
 def generate_relations(interaction_list):
-    '''
+    '''Extract keyword and relational data from interaction description.
     
     '''
     relation_list = []
@@ -91,15 +111,45 @@ def generate_relations(interaction_list):
     
 
 def remove_duplicates(relation_list):
+    '''Remove possible duplicate relations.
+
+    Check all drug pairs and filter them out if the same pair (being agnostic 
+    about the order) appear with the same interaction. Retain copies if they 
+    have different interactions.
+
+    Args :
+        relation_list (list): List of Relation instances to be filtered.
+
+    Returns :
+        new_relation_list (list): Filtered list of Relation instances.
+        filter_count (int): Number of elements filtered.
     '''
 
-    '''
+    relation_dict = {}
+    filter_count = 0
+    new_relation_list = []
+    for relation in relation_list:
+        relation_pair = frozenset([relation.subject, relation.object])
+        if relation_pair not in relation_dict:
+            relation_dict[relation_pair] = relation.normalized_relation
+            new_relation_list.append(relation)
+        elif relation_dict[relation_pair] != relation.normalized_relation:
+            new_relation_list.append(relation)
+        else:
+            filter_count += 1
+    
+    return new_relation_list, filter_count
 
 
 def filter_unknowns(relation_list):
     '''Filter out Relation objects that don't have a normalized relation
 
+    Args :
+        relation_list (list): List of Relation instances to be filtered.
 
+    Returns :
+        new_relation_list (list): Filtered list of Relation instances.
+        filter_count (int): Number of elements filtered.
     '''
 
     filter_count = 0
