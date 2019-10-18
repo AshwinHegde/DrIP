@@ -1,6 +1,5 @@
 from labels import *
-
-# TODO : Document code
+import csv
 
 # File to extract particular keywords from textual description of interactions.
 #
@@ -165,7 +164,7 @@ def filter_unknowns(relation_list):
     # TODO : Output interactions (relation.relation) not being picked up
 
 
-def generate_labels(relation_list):
+def generate_labels(relation_list, save = False):
     '''Generate numerical labels for each interaction
 
 
@@ -179,5 +178,29 @@ def generate_labels(relation_list):
             label_map[relation.normalized_relation] = counter
             label_lookup[counter] = relation.normalized_relation
             counter += 1
+
+    if save:
+        write_dict_to_csv(label_lookup, 'label_lookup.csv')
     
     return label_map, label_lookup
+
+def write_dict_to_csv(d, csv_file):
+    '''Write a dictionary to a csv file
+
+    Args :
+        d (dict): Dictionary to write into file.
+        csv_file (str): Name and location of csv file to be written to
+    
+    Returns :
+        None
+    '''
+    
+    if csv_file[-3:] == 'csv':
+        try:
+            with open(csv_file, 'w') as file:
+                w = csv.writer(file)
+                w.writerows(d.items())
+        except IOError:
+            print('I/O Error')
+    else:
+        print('Not a csv file.')

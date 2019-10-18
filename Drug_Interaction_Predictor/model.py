@@ -54,15 +54,16 @@ def mlp_train(x_train, y_train):
     '''
     callbacks = my_callback()
 
-    x_train = np.array(x_train).astype(float)
+    x_train = np.array(x_train).astype('float')
+    print('Data type of train data : ', x_train.dtype)
     y_train = np.array(y_train)#.astype(float)
     number_of_features = x_train.shape[1]
     number_of_labels = max(set(y_train))
-    print(number_of_features)
-    print(number_of_labels)
+    print('Number of features : ', number_of_features)
+    print('Number of classification labels : ', len(set(y_train)))
     y_train = np.reshape(y_train, (-1, 1))
-    #print(x_train.shape)
-    #print(y_train.shape)
+    print('Shape of x_train : ', x_train.shape)
+    print('Shape of y_train', y_train.shape)
     #print(y_train[:10])
 
     mlp_model = tf.keras.Sequential([
@@ -75,20 +76,70 @@ def mlp_train(x_train, y_train):
 
     #y_train = tf.keras.utils.to_categorical(y_train)
 
-    opt = tf.keras.optimizers.SGD(lr=0.01, momentum=0.9)
+    # opt = tf.keras.optimizers.SGD(lr=0.01, momentum=0.9)
     mlp_model.compile(optimizer = 'adam',
                 loss = 'sparse_categorical_crossentropy',
                 metrics = ['accuracy'])
-
-    #mlp_model.summary()
 
     history = mlp_model.fit(x_train,
                         y_train,
                         batch_size = 64,
                         epochs = 8,
+                        validation_split = 0.2,
+                        verbose = 2,
+                        callbacks = [callbacks])
+
+    mlp_model.summary()
+
+    return mlp_model
+
+def mlp_mol2vec_train(x_train, y_train):
+    '''Build and train a multilayer perceptron model
+
+
+    '''
+    callbacks = my_callback()
+
+    x_train = np.array(x_train).astype('float')
+    print('Data type of train data : ', x_train.dtype)
+    y_train = np.array(y_train)#.astype(float)
+    number_of_features = x_train.shape[1]
+    number_of_labels = max(set(y_train))
+    print('Number of features : ', number_of_features)
+    print('Number of classification labels : ', len(set(y_train)))
+    y_train = np.reshape(y_train, (-1, 1))
+    print('Shape of x_train : ', x_train.shape)
+    print('Shape of y_train', y_train.shape)
+    #print(y_train[:10])
+
+    mlp_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(number_of_features, activation = tf.nn.relu),
+        tf.keras.layers.Dense(number_of_features*2, activation = tf.nn.relu),
+        tf.keras.layers.Dense(number_of_features*2, activation = tf.nn.relu),
+        tf.keras.layers.Dense(number_of_features//2, activation = tf.nn.relu),
+        #tf.keras.layers.Dense(number_of_features, activation = tf.nn.relu),
+        #tf.keras.layers.Dense(number_of_features, activation = tf.nn.relu),
+        #tf.keras.layers.Dense(number_of_features, activation = tf.nn.relu),
+        #tf.keras.layers.Dense(number_of_features, activation = tf.nn.relu),
+        tf.keras.layers.Dense(number_of_labels + 1, activation = tf.nn.softmax)
+    ])
+
+    #y_train = tf.keras.utils.to_categorical(y_train)
+
+    opt = tf.keras.optimizers.SGD(lr = 0.1, momentum = 0.9)
+    mlp_model.compile(optimizer = 'adam',
+                loss = 'sparse_categorical_crossentropy',
+                metrics = ['accuracy'])
+
+    history = mlp_model.fit(x_train,
+                        y_train,
+                        batch_size = 64,
+                        epochs = 25,
                         validation_split = 0.1,
                         verbose = 2,
                         callbacks = [callbacks])
+
+    mlp_model.summary()
 
     return mlp_model
 
@@ -109,3 +160,37 @@ def generate_model_report(model, x_test, y_test):
     print("F1 Score: ", f1)
 
     return accuracy, precision, recall, f1
+
+
+def convert_to_2_class(y_true, y_pred, cls):
+    new_ytrue = []
+    new_ypred = []
+    for i in range(len(y_true)):
+        if y_true[i] == cls and y_pred[i] == cls: 
+            new_ytrue.append(1)
+            new_ypred.append(1)
+        elif y_true[i] == cls and y_pred[i] != cls:
+            new_ytrue.append(1)
+            new_ypred.append(0)
+        elif y_true[i] != cls and y_pred[i] ==cls: 
+            new_ytrue.append(0)
+            new_ypred.append(1)
+        elif y_true[i] != cls and y_pred[1] !=cls:
+            new_ytrue.append(0)
+            new_ypred.append(0)
+
+    return new_ytrue, new_ypred
+
+
+def generate_model_report_per_class(y_test, y_pred, classes):
+    accuracy_per_class = {}
+    precision_per_class = {}
+    recall_per_class = {}
+    f1score_per_class = {}
+    for cls in classes:
+        new_ytrue, new_ypred = convert_to_2_class(y_test, y_pred, cls)
+        accuracy_per_class[cls] = accuracy_score(new_ytrue, new_ypred)
+        precision_per_class[cls] = precision_score(new_ytrue, new_ypred)
+        recall_per_class [cls] = recall_score(new_ytrue, new_ypred)
+        f1score_per_class[cls] = f1_score(new_ytrue, new_ypred)
+    return accuracy_per_class, precision_per_class, recall_per_class, f1score_per_class
