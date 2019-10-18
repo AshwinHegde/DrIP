@@ -160,3 +160,37 @@ def generate_model_report(model, x_test, y_test):
     print("F1 Score: ", f1)
 
     return accuracy, precision, recall, f1
+
+
+def convert_to_2_class(y_true, y_pred, cls):
+    new_ytrue = []
+    new_ypred = []
+    for i in range(len(y_true)):
+        if y_true[i] == cls and y_pred[i] == cls: 
+            new_ytrue.append(1)
+            new_ypred.append(1)
+        elif y_true[i] == cls and y_pred[i] != cls:
+            new_ytrue.append(1)
+            new_ypred.append(0)
+        elif y_true[i] != cls and y_pred[i] ==cls: 
+            new_ytrue.append(0)
+            new_ypred.append(1)
+        elif y_true[i] != cls and y_pred[1] !=cls:
+            new_ytrue.append(0)
+            new_ypred.append(0)
+
+    return new_ytrue, new_ypred
+
+
+def generate_model_report_per_class(y_test, y_pred, classes):
+    accuracy_per_class = {}
+    precision_per_class = {}
+    recall_per_class = {}
+    f1score_per_class = {}
+    for cls in classes:
+        new_ytrue, new_ypred = convert_to_2_class(y_test, y_pred, cls)
+        accuracy_per_class[cls] = accuracy_score(new_ytrue, new_ypred)
+        precision_per_class[cls] = precision_score(new_ytrue, new_ypred)
+        recall_per_class [cls] = recall_score(new_ytrue, new_ypred)
+        f1score_per_class[cls] = f1_score(new_ytrue, new_ypred)
+    return accuracy_per_class, precision_per_class, recall_per_class, f1score_per_class
