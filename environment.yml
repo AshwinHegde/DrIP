@@ -1,10 +1,10 @@
 name: DrIP
 channels:
   - defaults
+  - rdkit
 dependencies:
   - rdkit
   - flask
   - tensorflow
   - gensim
-prefix: /home/ashwin/anaconda3/envs/DrIP
-
+#prefix: /home/ashwin/anaconda3/envs/DrIP
