@@ -6,10 +6,8 @@ RUN conda env create -f /tmp/environment.yml
 #ENV PATH /opt/conda/envs/DrIP/bin:$PATH
 #RUN /bin/bash -c "source activate DrIP"
 
-RUN echo "source activate $(head -1 /tmp/environment.yml | cut -d' ' -f2)" > ~/.bashrc
-ENV PATH /opt/conda/envs/$(head -1 /tmp/environment.yml | cut -d' ' -f2)/bin:$PATH
-
-#RUN conda env update --name DrIP --file environment.yml
+RUN echo "source activate DrIP" > ~/.bashrc
+ENV PATH /opt/conda/envs/DrIP/bin:$PATH
 
 WORKDIR /application
 
