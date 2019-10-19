@@ -1,3 +1,3 @@
 #! /usr/bin/env python
-from DrIP import app
+from flaskapp import app
 app.run(debug=True)

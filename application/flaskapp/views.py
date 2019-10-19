@@ -1,11 +1,11 @@
 from flask import render_template
 from flask import request
-from DrIP import app
+from flaskapp import app
 import csv
 from inference import *
 from feature_generation import smiles_to_ECFP
 
-# File that contains all the python processing and the view logic
+# File that contains all the python processing and the views logic
 #
 
 
@@ -34,7 +34,7 @@ def read_dict_from_csv(csv_file):
     return d
 
 
-SMILES_DICT = read_dict_from_csv('DrIP/smiles_dictionary.csv')
+SMILES_DICT = read_dict_from_csv('flaskapp/smiles_dictionary.csv')
 
 
 @app.route('/', methods = ['GET'])
@@ -65,11 +65,11 @@ def predict():
         return render_template('error.html', error = 'drug_not_found')
 
 
-    prediction = predict_interaction(smiles, SMILES_DICT[drug_name], directory = 'DrIP')
+    prediction = predict_interaction(smiles, SMILES_DICT[drug_name], directory = 'flaskapp')
 
     top_labels, top_probs = get_top_n(prediction, 5)
 
-    label_lookup = read_dict_from_csv('DrIP/label_lookup.csv')
+    label_lookup = read_dict_from_csv('flaskapp/label_lookup.csv')
 
     top_labels = list(map(lambda x : label_lookup[str(x)], top_labels))
 
