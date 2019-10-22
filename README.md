@@ -6,7 +6,7 @@ This project tries to predict the kind of effect that occurs when two drugs are 
 DrIP can be used in multiple ways. Please use as suited to your needs.
 ### Web Application
 The web application can be accessed at [DrIP](http://mlsolver.xyz/DrIP). This is good for one-off predictions and using a graphical interface.
-Upload image
+![Web App](Web_app_screenshot.png)
 
 Use the molecular editor on the left to draw the candidate drug molecule. Use the dropdown list on the right to choose an existing drug from the DrugBank database. Clicking on the predict button then gives the top five predicted interactions and the probabilities predicted by the model.
 ### Local
