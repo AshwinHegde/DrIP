@@ -9,6 +9,4 @@ RUN conda env create -f /tmp/environment.yml
 RUN echo "source activate DrIP" > ~/.bashrc
 ENV PATH /opt/conda/envs/DrIP/bin:$PATH
 
-WORKDIR /application
-
-CMD python run.py
+RUN bash download_model.sh
