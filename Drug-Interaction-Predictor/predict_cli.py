@@ -3,20 +3,23 @@ import sys
 from inference import *
 import tensorflow as tf
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--candidates_file", help="Path to file with candidate SMILES strings\
+parser = argparse.ArgumentParser(description='Predict drug interactions.')
+parser.add_argument('-c', '--candidates_file', help="Path to file with candidate SMILES strings\
      (txt file)")
-parser.add_argument("--drugs_file", help="Path to file with drug SMILES strings \
+parser.add_argument('-d', '--drugs_file', help="Path to file with drug SMILES strings \
     (txt file)")
-parser.add_argument("--target_file", help="Path to target file to save interactions \
+parser.add_argument('-t', '--target_file', help="Path to target file to save interactions \
     (csv file)")
-parser.add_argument("--model", help="Path to model to use for predictions \
-    (csv file)", default='application/flaskapp/mlp_ECFP.h5')
+parser.add_argument('-m', '--model', help="Path to model to use for predictions \
+    (csv file)", default=os.path.join('application', 'flaskapp', 'mlp_ECFP.h5'))
 args = parser.parse_args()
 
 candidates_file = args.candidates_file
 drugs_file = args.drugs_file
 target_file = args.target_file
+
+if candidates_file is None or drugs_file is None or target_file is None:
+    raise ValueError('Missing arguments')
 
 if candidates_file[-4:] != '.txt':
     raise ValueError('Candidates file must be a txt file')

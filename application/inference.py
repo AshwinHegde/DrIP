@@ -83,7 +83,7 @@ def predict_from_files(candidates_file, drugs_file, target_file, model):
             drugs_list.append(line)
     print('Loaded existing drugs')
 
-    label_lookup = read_dict_from_csv('label_lookup.csv')
+    label_lookup = read_dict_from_csv(os.path.join('application', 'flaskapp', 'label_lookup.csv'))
 
     interactions_df = pd.DataFrame(columns = ['Candidate SMILES', 'Drug SMILES', \
         'Interaction 1', 'Probability 1', 'Interaction 2', 'Probability 2', \
