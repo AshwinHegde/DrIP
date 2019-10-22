@@ -11,7 +11,7 @@ parser.add_argument("--drugs_file", help="Path to file with drug SMILES strings 
 parser.add_argument("--target_file", help="Path to target file to save interactions \
     (csv file)")
 parser.add_argument("--model", help="Path to model to use for predictions \
-    (csv file)", default='mlp_ECFP.h5')
+    (csv file)", default='application/flaskapp/mlp_ECFP.h5')
 args = parser.parse_args()
 
 candidates_file = args.candidates_file
