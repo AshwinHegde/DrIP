@@ -27,7 +27,11 @@ Next download the pre-trained model
 
 	bash download_model.sh
 
-Now you are good to go.
+Now you are good to go. See instructions below to run inference.
+
+To exit (deactivate) the conda environment run
+
+	conda deactivate
 
 ### Inference
 Predictions from the command line are made using the `predict_cli.py` file.
