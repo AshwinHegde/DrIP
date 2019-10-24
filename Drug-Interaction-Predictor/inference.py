@@ -37,14 +37,14 @@ def predict_interaction(smiles, smiles_b, model = 'mlp', feature = 'ECFP', direc
     '''Use model to predict interactions
 
     Args :
-    smiles (str): First SMILES string
-    smiles_b (str): Second SMILES string
-    model (str): Name of model used to train
-    feature (str): Name of feature embedding used
-    directory (str): Path to directory containing model
+        smiles (str): First SMILES string
+        smiles_b (str): Second SMILES string
+        model (str): Name of model used to train
+        feature (str): Name of feature embedding used
+        directory (str): Path to directory containing model
 
     Returns :
-    prediction (numpy.ndarray): Array containing prediction from model
+        prediction (numpy.ndarray): Array containing prediction from model
     '''
 
     model_path = os.path.join(directory, model + '_' + feature + '.h5')
@@ -62,13 +62,13 @@ def predict_from_files(candidates_file, drugs_file, target_file, model):
     '''Use model to predict interaction between candidates and drugs
 
     Args :
-    candidates_file (str): Path to txt file with candidate SMILES strings
-    drugs_file (str): Path to txt file with drug SMILES strings
-    target_file (str): Path to csv file to write results to
-    model (object): Pre-trained model to use to predict interactions from
+        candidates_file (str): Path to txt file with candidate SMILES strings
+        drugs_file (str): Path to txt file with drug SMILES strings
+        target_file (str): Path to csv file to write results to
+        model (object): Pre-trained model to use to predict interactions from
 
     Returns :
-    None
+        None
     '''
 
     candidates_list = []
@@ -114,12 +114,12 @@ def get_top_n(arr, n):
     '''Return the top n elements and indices of a numpy array
 
     Args :
-    arr (numpy.ndarray): Array that contains labels and corresponding probablilites
-    n (int): Number of top values to return
+        arr (numpy.ndarray): Array that contains labels and corresponding probablilites
+        n (int): Number of top values to return
 
     Returns :
-    top_labels (list): List of numerical labels that have the top probabilities
-    top_probs (list): Descending list of probabilities
+        top_labels (list): List of numerical labels that have the top probabilities
+        top_probs (list): Descending list of probabilities
     '''
 
     assert(type(n) == int and n > 0)

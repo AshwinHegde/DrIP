@@ -10,8 +10,6 @@ import tensorflow as tf
 import numpy as np
 import random
 
-# TODO
-
 # Contains various models and different metrics
 #
 #
@@ -19,7 +17,12 @@ import random
 def rf_train(x_train, y_train):
     '''Build and train a random forest
 
+    Args :
+        x_train (numpy.ndarray): Features for training
+        y_train (numpy.ndarray): Classification labels for training
 
+    Returns :
+        model (object): Returns an sklearn random forest model trained on the input data
     '''
     rf_model = RandomForestClassifier(n_estimators = 100)
 
@@ -31,7 +34,12 @@ def rf_train(x_train, y_train):
 def svm_train(x_train, y_train):
     '''Build and train an svm
 
+    Args :
+        x_train (numpy.ndarray): Features for training
+        y_train (numpy.ndarray): Classification labels for training
 
+    Returns :
+        model (object): Returns an sklearn svm model fit on the input data
     '''
     svm_model = svm.SVC()
 
@@ -40,17 +48,21 @@ def svm_train(x_train, y_train):
     return svm_model
 
 class my_callback(tf.keras.callbacks.Callback):
-    '''
-    '''
+    '''Callback class for Keras model'''
     def on_epoch_end(self, epoch, logs = {}):
-        if logs.get('acc') > 1.0:
+        if logs.get('acc') > 0.99:
             print("\nReached 100% accuracy. Stopping training...")
             self.model.stop_training = True
 
 def mlp_train(x_train, y_train):
     '''Build and train a multilayer perceptron model
 
+    Args :
+        x_train (numpy.ndarray): Features for training
+        y_train (numpy.ndarray): Classification labels for training
 
+    Returns :
+        model (object): Returns a Keras neural network fit on the input data
     '''
     callbacks = my_callback()
 
@@ -94,9 +106,14 @@ def mlp_train(x_train, y_train):
     return mlp_model
 
 def mlp_mol2vec_train(x_train, y_train):
-    '''Build and train a multilayer perceptron model
+    '''Build and train a multilayer perceptron model for mol2vec feature vectors
 
+    Args :
+        x_train (numpy.ndarray): Features for training
+        y_train (numpy.ndarray): Classification labels for training
 
+    Returns :
+        model (object): Returns a Keras neural network fit on the input data
     '''
     callbacks = my_callback()
 
@@ -124,8 +141,6 @@ def mlp_mol2vec_train(x_train, y_train):
         tf.keras.layers.Dense(number_of_labels + 1, activation = tf.nn.softmax)
     ])
 
-    #y_train = tf.keras.utils.to_categorical(y_train)
-
     opt = tf.keras.optimizers.SGD(lr = 0.1, momentum = 0.9)
     mlp_model.compile(optimizer = 'adam',
                 loss = 'sparse_categorical_crossentropy',
@@ -145,8 +160,18 @@ def mlp_mol2vec_train(x_train, y_train):
 
 
 def generate_model_report(model, x_test, y_test):
-    '''Get a report of various metrics for testing input model
+    '''Get various metrics for testing input model
 
+    Args :
+        model (object): Model to use for prediction
+        x_test (numpy.ndarray): Data for testing
+        y_test (numpy.ndarray): Target classification labels
+
+    Returns :
+        accuracy (int): Accuracy score
+        precision (int): Precision score
+        recall (int): Recall score
+        f1 (int): F1 score
     '''
     y_pred = model.predict(x_test)
     y_pred = np.round(y_pred, decimals = 0).astype(int)
@@ -163,6 +188,17 @@ def generate_model_report(model, x_test, y_test):
 
 
 def convert_to_2_class(y_true, y_pred, cls):
+    '''Convert multi-class labels to binary labels with respect to a single class
+
+    Args :
+        y_true (numpy.ndarray): True classification labels
+        y_pred (numpy.ndarray): Predicted classification labels
+        cls (int): Class to use as reference for binary classification
+
+    Returns :
+        new_y_true (numpy.ndarray): True binary classification labels
+        new_y_pred (numpy.ndarray): Predicted binary classification labels
+    '''
     new_ytrue = []
     new_ypred = []
     for i in range(len(y_true)):
@@ -183,6 +219,19 @@ def convert_to_2_class(y_true, y_pred, cls):
 
 
 def generate_model_report_per_class(y_test, y_pred, classes):
+    '''Get various metrics calculated classwise for testing model
+
+    Args :
+        y_true (numpy.ndarray): True classification labels
+        y_pred (numpy.ndarray): Predicted classification labels
+        cls (int): Class to use as reference for binary classification
+
+    Returns :
+        accuracy_per_class (list): List of classwise accuracy scores
+        recall_per_class (list): List of classwise accuracy scores
+        precision_per_class (list): List of classwise accuracy scores
+        f1score_per_class (list): List of classwise accuracy scores
+    '''
     accuracy_per_class = {}
     precision_per_class = {}
     recall_per_class = {}
