@@ -54,7 +54,7 @@ Data is obtained from [DrugBank](https://www.drugbank.ca/), a comprehensive drug
 [Wishart DS et al. : DrugBank 5.0: a major update to the DrugBank database for 2018. Nucleic Acids Res. 2018 Jan 4;46(D1):D1074-D1082.](https://www.ncbi.nlm.nih.gov/pubmed/29126136)
 
 ## Further Information
-More information on the project can be found in my [slide](https://tinyurl.com/project-DrIP)
+More information on the project can be found in my [slides](https://tinyurl.com/project-DrIP)
 
 ## Attribution
 Special thanks to Shristi Pandey whose project [Diction](https://github.com/ShristiP/diction) got me interested originally in this subject. I have built on her codebase.
